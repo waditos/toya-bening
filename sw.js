@@ -1,4 +1,4 @@
-const CACHE = 'toya-bening-v1'
+const CACHE = 'toya-bening-v2'
 
 const ASSETS = [
   './',
@@ -20,7 +20,11 @@ self.addEventListener('activate', (event) => {
 })
 
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached
+      return fetch(event.request).catch(() => new Response('Offline', { status: 503 }))
+    })
   )
 })
